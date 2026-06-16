@@ -66,7 +66,11 @@ cp .env.example .env
 Login once and persist credentials in the Docker volume:
 
 ```bash
-docker compose --profile login run --rm --service-ports hm-api-login
+docker compose run --rm \
+  -e HM_API_LOGIN_BIND_HOST=0.0.0.0 \
+  -p 10101:10101 \
+  -p 34567-34570:34567-34570 \
+  hm-api login --no-browser
 ```
 
 Open the printed login URL in your browser, then start the API service:
