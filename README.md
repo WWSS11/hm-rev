@@ -63,20 +63,18 @@ Create a local environment file:
 cp .env.example .env
 ```
 
-Login once and persist credentials in the Docker volume:
-
-```bash
-docker compose run --rm \
-  -e HM_API_LOGIN_BIND_HOST=0.0.0.0 \
-  -p 10101:10101 \
-  -p 34567-34570:34567-34570 \
-  hm-api login --no-browser
-```
-
-Open the printed login URL in your browser, then start the API service:
+Start the container:
 
 ```bash
 docker compose up -d
+```
+
+On the first run, if no credentials exist under `./cred`, the container prints a DevEco login URL in its logs and waits for login. Open that URL in your browser. After login succeeds, the same container starts the API service automatically.
+
+Check the login URL and startup logs:
+
+```bash
+docker compose logs -f hm-api
 ```
 
 To use the published image directly:
@@ -86,7 +84,7 @@ docker compose pull
 docker compose up -d
 ```
 
-The service listens on `http://localhost:8000` by default. Credentials are stored in the `hm-api-cred` Docker volume and are not baked into the image.
+The service listens on `http://localhost:8000` by default. Credentials are stored under `./cred` and are not baked into the image. If you need to expose the API outside the host, set `HM_API_PUBLISH_HOST=0.0.0.0` and configure `HM_API_KEY`.
 
 ---
 

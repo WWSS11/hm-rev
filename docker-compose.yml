@@ -1,17 +1,22 @@
 services:
   hm-api:
     image: ${HM_API_IMAGE:-ghcr.io/wwss11/hm-rev:latest}
+    container_name: ${HM_API_CONTAINER_NAME:-hm-api}
     build:
       context: .
     environment:
       HM_API_HOST: 0.0.0.0
       HM_API_PORT: 8000
+      HM_API_AUTO_LOGIN: ${HM_API_AUTO_LOGIN:-1}
+      HM_API_LOGIN_BIND_HOST: 0.0.0.0
       HM_API_KEY: ${HM_API_KEY:-}
       HM_API_PROXY: ${HM_API_PROXY:-}
     ports:
-      - "${HM_API_PORT:-8000}:8000"
+      - "${HM_API_PUBLISH_HOST:-127.0.0.1}:${HM_API_PORT:-8000}:8000"
+      - "${HM_API_LOGIN_PUBLISH_HOST:-0.0.0.0}:10101:10101"
+      - "${HM_API_LOGIN_PUBLISH_HOST:-0.0.0.0}:34567-34570:34567-34570"
     volumes:
-      - hm-api-cred:/app/cred
+      - ./cred:/app/cred
     restart: unless-stopped
     healthcheck:
       test:
@@ -25,6 +30,3 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-
-volumes:
-  hm-api-cred:
