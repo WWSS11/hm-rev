@@ -36,6 +36,7 @@ env/
 *~
 
 # Project-specific sensitive data
+.env
 cred/
 *.enc
 *.kek

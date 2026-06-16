@@ -49,6 +49,43 @@ uv run hm-api serve --host 0.0.0.0 --port 8000 --key your-secret-key
 
 ---
 
+## 🐳 Docker
+
+The image is published as:
+
+```bash
+ghcr.io/wwss11/hm-rev:latest
+```
+
+Create a local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Login once and persist credentials in the Docker volume:
+
+```bash
+docker compose --profile login run --rm --service-ports hm-api-login
+```
+
+Open the printed login URL in your browser, then start the API service:
+
+```bash
+docker compose up -d
+```
+
+To use the published image directly:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+The service listens on `http://localhost:8000` by default. Credentials are stored in the `hm-api-cred` Docker volume and are not baked into the image.
+
+---
+
 ## 📖 Commands
 
 <div align="center">

@@ -1,0 +1,47 @@
+services:
+  hm-api:
+    image: ${HM_API_IMAGE:-ghcr.io/wwss11/hm-rev:latest}
+    build:
+      context: .
+    environment:
+      HM_API_HOST: 0.0.0.0
+      HM_API_PORT: 8000
+      HM_API_KEY: ${HM_API_KEY:-}
+      HM_API_PROXY: ${HM_API_PROXY:-}
+    ports:
+      - "${HM_API_PORT:-8000}:8000"
+    volumes:
+      - hm-api-cred:/app/cred
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  hm-api-login:
+    image: ${HM_API_IMAGE:-ghcr.io/wwss11/hm-rev:latest}
+    build:
+      context: .
+    profiles:
+      - login
+    command: ["login", "--no-browser"]
+    environment:
+      HM_API_LOGIN_BIND_HOST: 0.0.0.0
+      HM_API_PROXY: ${HM_API_PROXY:-}
+    ports:
+      - "10101:10101"
+      - "34567-34570:34567-34570"
+    volumes:
+      - hm-api-cred:/app/cred
+    restart: "no"
+
+volumes:
+  hm-api-cred:

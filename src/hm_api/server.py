@@ -40,12 +40,18 @@ def build_app(api_key: str | None = None, proxy: str | None = None) -> FastAPI:
 
     @app.middleware("http")
     async def auth_middleware(request: Request, call_next):
+        if request.url.path == "/health":
+            return await call_next(request)
         if api_key is None:
             return await call_next(request)
         auth = request.headers.get("Authorization", "")
         if not auth.startswith("Bearer ") or auth[7:] != api_key:
             return JSONResponse({"error": "Unauthorized"}, status_code=401)
         return await call_next(request)
+
+    @app.get("/health", response_model=None)
+    async def health() -> JSONResponse:
+        return JSONResponse({"status": "ok"})
 
     @app.get("/v1/models", response_model=None)
     async def list_models() -> JSONResponse:

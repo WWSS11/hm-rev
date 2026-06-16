@@ -22,6 +22,7 @@ from .config import (
     DEVECO_JWT_TOKEN_CHECK_URL,
     DEVECO_SUCCESS_REDIRECT_URL,
     DEVECO_TEMP_TOKEN_CHECK_URL,
+    LOGIN_BIND_HOST,
     TOKEN_FILE,
     USER_AGENT,
 )
@@ -249,7 +250,7 @@ def _save_access_token(access_token: str, refresh_token: str) -> None:
 
 
 async def _start_callback_server(
-    port: int, expected_code: str
+    port: int, expected_code: str, bind_host: str = LOGIN_BIND_HOST
 ) -> tuple[asyncio.Server, asyncio.Future]:
     loop = asyncio.get_running_loop()
     future: asyncio.Future = loop.create_future()
@@ -257,7 +258,7 @@ async def _start_callback_server(
     async def handler(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         await _callback_handler(reader, writer, expected_code, future)
 
-    server = await asyncio.start_server(handler, "127.0.0.1", port)
+    server = await asyncio.start_server(handler, bind_host, port)
     return server, future
 
 
